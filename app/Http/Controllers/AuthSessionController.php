@@ -34,6 +34,7 @@ class AuthSessionController extends Controller
      */
     public function store(Request $request)
     {
+        // return dd($request->recaptcha_response);
         // Validate request data
         $validator = Validator::make($request->all(), [
             'username' => 'required',

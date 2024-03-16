@@ -13,7 +13,6 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <!-- Styles -->
         @livewireStyles
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>        <!-- Scripts -->
     </head>
     <body class="font-sans antialiased">
         <x-banner />
@@ -35,9 +34,7 @@
                 {{ $slot }}
             </main>
         </div>
-        @stack('scripts')
         @stack('modals')
-
         @livewireScripts
     </body>
 </html>

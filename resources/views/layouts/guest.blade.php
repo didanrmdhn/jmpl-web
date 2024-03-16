@@ -16,12 +16,13 @@
 
         <!-- Styles -->
         @livewireStyles
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>        <!-- Scripts -->
     </head>
     <body>
         <div class="font-sans text-gray-900 dark:text-gray-100 antialiased">
             {{ $slot }}
         </div>
-
+        @stack('scripts')
         @livewireScripts
     </body>
 </html>

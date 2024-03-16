@@ -16,7 +16,7 @@ class VerifyRecaptcha
     public function handle(Request $request, Closure $next)
     {
         if ($this->shouldVerifyRecaptcha($request)) {
-            $recaptcha = $request->input('g-recaptcha-response');
+            $recaptcha = $request->input('recaptcha_response');
             if (empty($recaptcha)) {
                 // Add error message to the session
                 $request->session()->flash('recaptcha_error', 'Please complete the reCAPTCHA validation.');
