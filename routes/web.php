@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthSessionController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('login');
 });
+Route::get('/login', [AuthSessionController::class, 'index'])
+    ->middleware(['guest', 'recaptcha'])
+    ->name('login');
+
+Route::post('/login', [AuthSessionController::class, 'store'])
+    ->middleware(['guest', 'recaptcha']);
 
 Route::middleware([
     'auth:sanctum',
