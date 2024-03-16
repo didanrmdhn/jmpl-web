@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthSessionController;
-
+use App\Http\Controllers\TwoFactorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,10 +27,18 @@ Route::post('/login', [AuthSessionController::class, 'store'])
 
 Route::middleware([
     'auth:sanctum',
+    '2fa',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    // Add 2FA routes
+    Route::get('/two-factor-challenge', function () {
+        return view('auth.two-factor-challenge');
+    })->name('two-factor.login');
+
+    Route::post('/two-factor-challenge', [TwoFactorController::class, 'store'])
+    ->name('two-factor.post');
 });

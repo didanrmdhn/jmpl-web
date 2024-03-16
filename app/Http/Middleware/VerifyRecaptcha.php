@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class VerifyRecaptcha
 {
@@ -15,6 +16,16 @@ class VerifyRecaptcha
      */
     public function handle(Request $request, Closure $next)
     {
+         // Check if the user is attempting to authenticate
+        if ($request->is('login') && $request->isMethod('post')) {
+            // Check if 2FA is enabled for the user
+            if (Auth::user() && Auth::user()->two_factor_secret) {
+                // Redirect to 2FA challenge page
+                $request->session()->put('2fa_passed', false);
+                return redirect()->route('two-factor.login');
+            }
+        }
+
         if ($this->shouldVerifyRecaptcha($request)) {
             $recaptcha = $request->input('recaptcha_response');
             if (empty($recaptcha)) {
@@ -32,7 +43,6 @@ class VerifyRecaptcha
     protected function shouldVerifyRecaptcha(Request $request)
     {
         // Implement logic to check if reCAPTCHA should be verified
-        // For example, check if the number of failed login attempts exceeds a threshold
         $attempts = $request->session()->get('login_attempts', 0);
         return $attempts >= 3;
     }

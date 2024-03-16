@@ -34,7 +34,6 @@ class AuthSessionController extends Controller
      */
     public function store(Request $request)
     {
-        // return dd($request->recaptcha_response);
         // Validate request data
         $validator = Validator::make($request->all(), [
             'username' => 'required',
@@ -49,10 +48,15 @@ class AuthSessionController extends Controller
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
-        // Attempt to authenticate using Laravel's Auth facade
         $credentials = $request->only('username', 'password');
         if (Auth::attempt($credentials)) {
+            if(Auth::user()->two_factor_secret){
+                $request->session()->put('2fa_passed', false);
+            }
+            if (Auth::user()->two_factor_secret && $request->session()->get('2fa_passed') == false) {
+                $request->session()->put('auth.password_confirmed_at', time());
+                return redirect()->route('two-factor.login'); // Redirect to 2FA challenge page
+            }
             $request->session()->forget('login_attempts'); // Reset login attempts upon successful login
             $request->session()->forget('recaptcha_validated'); // Clear reCAPTCHA validation flag
             return redirect()->intended(route('dashboard')); // Redirect to dashboard or intended URL after successful login
@@ -67,7 +71,6 @@ class AuthSessionController extends Controller
     protected function shouldVerifyRecaptcha(Request $request)
     {
         // Implement logic to check if reCAPTCHA should be verified
-        // For example, check if the number of failed login attempts exceeds a threshold
         $attempts = $request->session()->get('login_attempts', 0);
         return $attempts >= 3;
     }
